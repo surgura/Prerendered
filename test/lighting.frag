@@ -1,7 +1,6 @@
 uniform sampler2D colormap;
 uniform sampler2D normalmap;
 uniform vec3 lightpos;
-uniform sampler2D depthmap;
  
 void main()
 {
@@ -19,7 +18,7 @@ void main()
     NdotL = max(dot(normal, lightDir), 0.0);
     diffuse = texture2D(colormap,gl_TexCoord[0].st);
     ambient = texture2D(colormap,gl_TexCoord[0].st) * 0;
-    gl_FragColor =  0.001*vec4((NdotL * diffuse).rgb, 0) + ambient + texture2D(depthmap, gl_TexCoord[0].st);
+    gl_FragColor =  NdotL * diffuse + ambient;
 
 /*
     vec3 normal, lightDir;
