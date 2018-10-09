@@ -152,7 +152,6 @@ int main()
         return -1;
     }
     
-    
     GLuint colorIndex = glGetUniformLocation(lighting.getNativeHandle(), "colormap");
     if (colorIndex == -1)
     {
@@ -194,18 +193,23 @@ int main()
         //sf::Vector3f lightpos(5.0f*(float)std::cos(((float)unixtime)*movespeed),1.0f,5.0f*(float)std::sin(((float)unixtime)*movespeed));
         sf::Vector3f lightpos(5+10.0f*(float)std::cos(((float)unixtime)*movespeed), 5, 5);
         lighting.setUniform("lightpos", lightpos);
+        lighting.setUniform("normalmap", cube1->normalMap);
 
-        //cube1->position += sf::Vector2f(0, movespeed);
         sf::Shader::bind(&lighting);
-
+        //cube1->position += sf::Vector2f(0, movespeed);
+        glUniform1i(depthIndex, 2);
+        glActiveTexture(GL_TEXTURE0 + 2);
+        glBindTexture(GL_TEXTURE_2D, *depthmap);
+        glActiveTexture(GL_TEXTURE0);
 
         //glUniform1i(colorIndex, GL_TEXTURE0);
         //glUniform1i(normalIndex, GL_TEXTURE1);
         //glUniform1i(depthIndex, GL_TEXTURE31);
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, cube1->normalMap.getNativeHandle());
-        glActiveTexture(GL_TEXTURE0);
-        //lighting.setUniform("normalmap", cube1->normalMap);
+       
+        //glActiveTexture(GL_TEXTURE2);
+        //glBindTexture(GL_TEXTURE_2D, cube1->normalMap.getNativeHandle());
+        //glActiveTexture(GL_TEXTURE0);
+       
         cube1->Draw(window, cameraPos);
         //cube2->Draw(lighting, window, cameraPos);
 
