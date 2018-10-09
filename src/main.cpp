@@ -1,7 +1,6 @@
 #include <GL/glew.h>
 #include <SFML/Graphics.hpp>
 #include <SFML/OpenGL.hpp>
-//#include <GL/glext.h>
 #include <iostream>
 #include <chrono>
 #include <cmath>
@@ -79,7 +78,7 @@ public:
         {
             for (size_t x = 0; x < (size_t)width; x++)
             {
-                data[y*width+x] = rgba[4 * (y*width+x)];//(float)(std::uint8_t)((rgba[4 * (y*width+x)]-48)/3.0f*255.0f);
+                data[y*width+x] = rgba[4 * (y*width+x)];
             }
         }
 
@@ -91,7 +90,6 @@ public:
  		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-        //glGenerateMipmap(GL_TEXTURE_2D);
 
         return { texid };
     }
@@ -117,31 +115,11 @@ uint64_t unix_timestamp()
     return ms.count();
 }
 
-/*
-class Window
-{
-    sf::Window window;
-
-    sf::ContextSettings GetWindowContext()
-    {
-        sf::ContextSettings settings;
-        settings.DepthBits         = 24; // Request a 24 bits depth buffer
-        settings.StencilBits       = 8;  // Request a 8 bits stencil buffer
-        settings.AntialiasingLevel = 2;  // Request 2 levels of antialiasing
-        return settings;
-    }
-public:
-    Window() : window(sf::VideoMode(800, 600, 32), "SFML OpenGL", sf::Style::Close, GetWindowContext())
-
-}*/
-
 int main()
 {
     TextureLoader texLoader(std::experimental::filesystem::path("./tex"));
 
-    sf::Vector2f cameraPos(0,0);
-
-    sf::RenderWindow window(sf::VideoMode(800, 600), "My window");
+    sf::RenderWindow window(sf::VideoMode(800, 600, 32), "SFML OpenGL", sf::Style::Close);
 
     GLenum err = glewInit();
     if (err != GLEW_OK)
@@ -150,6 +128,8 @@ int main()
         fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
         return -1;
     }
+
+    sf::Vector2f cameraPos(0,0);
 
     auto cube1 = CreateCube(texLoader);
     if (!cube1)
@@ -165,7 +145,6 @@ int main()
         return -1;
 
     sf::Shader lighting;
-    //if (!lighting.loadFromFile("lighting.frag", sf::Shader::Fragment))
     if (!lighting.loadFromFile("lighting.vert", "lighting.frag"))
     {
         return -1;
@@ -190,6 +169,16 @@ int main()
         return -1;
     }
 
+    sf::ContextSettings settings;
+    settings.depthBits         = 24; // Request a 24 bits depth buffer
+    settings.stencilBits       = 8;  // Request a 8 bits stencil buffer
+    settings.antialiasingLevel = 2;  // Request 2 levels of antialiasing
+    sf::RenderTexture finalImage;
+    if (!finalImage.create(800, 600, settings))
+    {
+        // error...
+    }
+
     while (window.isOpen())
     {
         // check all the window's events that were triggered since the last iteration of the loop
@@ -201,17 +190,20 @@ int main()
                 window.close();
         }
 
-        
-        glEnable(GL_DEPTH_TEST);  
-        // clear the window with black color
-        window.clear(sf::Color::Blue);
+        glEnable(GL_DEPTH_TEST);                            // Enables Depth Testing
+        glDepthMask(GL_TRUE);
+        glDepthFunc(GL_LESS);                             // The Type Of Depth Testing To Do
+        glDepthRange(0.0f, 1.0f);
+        glClearDepth(1.0f);                                 // Depth Buffer Setup
+
+        finalImage.clear(sf::Color::Blue);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         std::uint64_t unixtime = unix_timestamp();
         std::uint64_t botpart = unixtime;
         botpart /= 1000000;
         unixtime -= botpart * 1000000;
         float movespeed = 0.002f;
-        //sf::Vector3f lightpos(5.0f*(float)std::cos(((float)unixtime)*movespeed),1.0f,5.0f*(float)std::sin(((float)unixtime)*movespeed));
         sf::Vector3f lightpos(5+10.0f*(float)std::cos(((float)unixtime)*movespeed), 5, 5);
         lighting.setUniform("lightpos", lightpos);
         lighting.setUniform("normalmap", cube1->normalMap);
@@ -222,10 +214,17 @@ int main()
         glBindTexture(GL_TEXTURE_2D, *depthmap);
         glActiveTexture(GL_TEXTURE0);
        
-        cube1->Draw(window, cameraPos);
-        cube2->Draw(window, cameraPos);
+        cube1->Draw(finalImage, cameraPos);
+        cube2->Draw(finalImage, cameraPos);
 
-        // end the current frame
+        finalImage.display();
+
+        // draw image to window
+        window.clear();
+        glDisable(GL_DEPTH_TEST);
+        glUseProgram(0);
+        sf::Sprite finalSprite(finalImage.getTexture());
+        window.draw(finalSprite);
         window.display();
     }
 
