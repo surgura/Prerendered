@@ -29,15 +29,15 @@ public:
     {
         sf::Transform fromIsoToScreen;
         fromIsoToScreen.rotate(45);
-        sf::Vector2f screenPos = fromIsoToScreen.transformPoint(position - cameraPos);
+        sf::Vector2f screenPos = fromIsoToScreen.transformPoint(position - sf::Vector2f(-cameraPos.x, cameraPos.y));
         screenPos.y *= 0.5;
-        return screenPos;
+        return -screenPos;
     }
 
     void Draw(sf::RenderTarget& renderTarget, sf::Vector2f const& cameraPos)
     {
         sf::Sprite sprite;
-        sprite.setPosition(RealposToScreenpos(cameraPos) + sf::Vector2f(renderTarget.getSize().x, renderTarget.getSize().y)/2.0f);
+        sprite.setPosition(RealposToScreenpos(cameraPos) + sf::Vector2f((float)renderTarget.getSize().x, (float)renderTarget.getSize().y)/2.0f);
         sprite.setTexture(colorMap);
         sprite.setScale(scale);
         sprite.setOrigin(origin);
@@ -123,11 +123,31 @@ uint64_t unix_timestamp()
     return ms.count();
 }
 
+sf::Vector2f ScreenposToRealpos(sf::Vector2f const& screenPos, sf::Vector2f const& cameraPos, sf::Vector2u const& screenSize)
+{
+    /*sf::Vector2f result = screenPos;
+    result -= sf::Vector2f((float)screenSize.x, (float)screenSize.y)/2.0f;
+    result.y *= 2;
+    sf::Transform rotate;
+    rotate.rotate(-45);
+    result = rotate.transformPoint(result) + cameraPos;*/
+    sf::Vector2f result = screenPos;
+    result -= sf::Vector2f((float)screenSize.x, (float)screenSize.y)/2.0f;
+    result *= -1.0f;
+    result.y *= 2.0f;
+    sf::Transform rotate;
+    rotate.rotate(-45);
+    result = rotate.transformPoint(result);
+    result += sf::Vector2f(-cameraPos.x, cameraPos.y);
+    return result;
+}
+
 int main()
 {
     TextureLoader texLoader(std::experimental::filesystem::path("./tex"));
 
     sf::RenderWindow window(sf::VideoMode(800, 600, 32), "SFML OpenGL", sf::Style::Close);
+    window.setFramerateLimit(30);
 
     GLenum err = glewInit();
     if (err != GLEW_OK)
@@ -137,7 +157,7 @@ int main()
         return -1;
     }
 
-    sf::Vector2f cameraPos(0,0);
+    sf::Vector2f cameraPos(0, 0);
 
     auto cube1 = CreateCube(texLoader);
     if (!cube1)
@@ -208,6 +228,27 @@ int main()
         finalImage.clear(sf::Color::Blue);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+        {
+            cameraPos.x -= 10;
+            cameraPos.y += 10;
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+        {
+            cameraPos.x += 10;
+            cameraPos.y += 10;
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+        {
+            cameraPos.x += 10;
+            cameraPos.y -= 10;
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+        {
+            cameraPos.x -= 10;
+            cameraPos.y -= 10;
+        }
+
         std::uint64_t unixtime = unix_timestamp();
         std::uint64_t botpart = unixtime;
         botpart /= 1000000;
@@ -216,8 +257,12 @@ int main()
         sf::Vector3f lightpos(5+10.0f*(float)std::cos(((float)unixtime)*movespeed), 5, 5);
         lighting.setUniform("lightpos", lightpos);
         lighting.setUniform("normalmap", cube1->normalMap);
-        cube2->position.x += (unixtime*0.0002f)/100.0f;
+        //cube2->position.x += (unixtime*0.0002f)/100.0f;
         //cube2->position.y += unixtime*0.0000002f;
+
+        sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+        sf::Vector2f mouseReal = ScreenposToRealpos({ (float)mousePos.x, (float)mousePos.y }, cameraPos, finalImage.getSize());
+        cube2->position = mouseReal;
 
         sf::Shader::bind(&lighting);
         glUniform1i(depthIndex, 2);
