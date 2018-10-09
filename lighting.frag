@@ -2,6 +2,7 @@ uniform sampler2D colormap;
 uniform sampler2D normalmap;
 uniform vec3 lightpos;
 uniform sampler2D depthmap;
+uniform float scaley;
  
 void main()
 {
