@@ -73,24 +73,20 @@ public:
             return std::nullopt;
         }
 
-        std::vector<std::uint8_t> datau8;
-        datau8.resize(size_t(width * height * 4));
+        std::vector<float> data;
+        data.resize(size_t(width * height));
         for (size_t y = 0; y < (size_t)height; y++)
         {
             for (size_t x = 0; x < (size_t)width; x++)
             {
-                datau8[(y*width+x) * 4 + 0] = (std::uint8_t)((rgba[4 * (y*width+x) + 0]-48)/3.0f*255.0f);
-                datau8[(y*width+x) * 4 + 1] = (std::uint8_t)((rgba[4 * (y*width+x) + 0]-48)/3.0f*255.0f);
-                datau8[(y*width+x) * 4 + 2] = (std::uint8_t)((rgba[4 * (y*width+x) + 0]-48)/3.0f*255.0f);
-                datau8[(y*width+x) * 4 + 3] = 255;
-                //std::cout << (std::uint32_t)datau8[(y*width+x) * 4 + 0] << std::endl;
+                data[y*width+x] = rgba[4 * (y*width+x)];//(float)(std::uint8_t)((rgba[4 * (y*width+x)]-48)/3.0f*255.0f);
             }
         }
 
         GLuint texid;
         glGenTextures(1, &texid);
         glBindTexture(GL_TEXTURE_2D, texid);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, datau8.data());
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, width, height, 0, GL_RED, GL_FLOAT, data.data());
  		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
  		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
@@ -121,6 +117,24 @@ uint64_t unix_timestamp()
     return ms.count();
 }
 
+/*
+class Window
+{
+    sf::Window window;
+
+    sf::ContextSettings GetWindowContext()
+    {
+        sf::ContextSettings settings;
+        settings.DepthBits         = 24; // Request a 24 bits depth buffer
+        settings.StencilBits       = 8;  // Request a 8 bits stencil buffer
+        settings.AntialiasingLevel = 2;  // Request 2 levels of antialiasing
+        return settings;
+    }
+public:
+    Window() : window(sf::VideoMode(800, 600, 32), "SFML OpenGL", sf::Style::Close, GetWindowContext())
+
+}*/
+
 int main()
 {
     TextureLoader texLoader(std::experimental::filesystem::path("./tex"));
@@ -141,17 +155,18 @@ int main()
     if (!cube1)
         return -1;
 
-    /*auto cube2 = CreateCube(texLoader);
+    auto cube2 = CreateCube(texLoader);
     if (!cube2)
         return -1;
-    cube2->position = {-100, 100};*/
+    cube2->position = {-100, 100};
 
     auto depthmap = texLoader.GetDepthMap("cube.depth.exr");
     if (!depthmap)
         return -1;
 
     sf::Shader lighting;
-    if (!lighting.loadFromFile("lighting.frag", sf::Shader::Fragment))
+    //if (!lighting.loadFromFile("lighting.frag", sf::Shader::Fragment))
+    if (!lighting.loadFromFile("lighting.vert", "lighting.frag"))
     {
         return -1;
     }
@@ -186,6 +201,8 @@ int main()
                 window.close();
         }
 
+        
+        glEnable(GL_DEPTH_TEST);  
         // clear the window with black color
         window.clear(sf::Color::Blue);
 
@@ -200,22 +217,13 @@ int main()
         lighting.setUniform("normalmap", cube1->normalMap);
 
         sf::Shader::bind(&lighting);
-        //cube1->position += sf::Vector2f(0, movespeed);
         glUniform1i(depthIndex, 2);
         glActiveTexture(GL_TEXTURE0 + 2);
         glBindTexture(GL_TEXTURE_2D, *depthmap);
         glActiveTexture(GL_TEXTURE0);
-
-        //glUniform1i(colorIndex, GL_TEXTURE0);
-        //glUniform1i(normalIndex, GL_TEXTURE1);
-        //glUniform1i(depthIndex, GL_TEXTURE31);
-       
-        //glActiveTexture(GL_TEXTURE2);
-        //glBindTexture(GL_TEXTURE_2D, cube1->normalMap.getNativeHandle());
-        //glActiveTexture(GL_TEXTURE0);
        
         cube1->Draw(window, cameraPos);
-        //cube2->Draw(lighting, window, cameraPos);
+        cube2->Draw(window, cameraPos);
 
         // end the current frame
         window.display();
