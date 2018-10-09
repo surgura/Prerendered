@@ -18,14 +18,16 @@ add_executable(${PROJECT_NAME} ${SRC})
 #target_link_libraries(main
 #  core)
 
-find_package(GLEW REQUIRED)
-target_link_libraries(${PROJECT_NAME} ${GLEW_LIBRARIES})
-include_directories(${GLEW_INCLUDE_DIRS})
-
 # find SFML module
 find_package(SFML COMPONENTS system window graphics REQUIRED)
 target_link_libraries(${PROJECT_NAME} sfml-system sfml-window sfml-graphics)
 
-find_package(OPENGL REQUIRED)
+find_package(GLEW REQUIRED)
+target_link_libraries(${PROJECT_NAME} ${GLEW_LIBRARIES})
+include_directories(${GLEW_INCLUDE_DIRS})
+
+find_package(OpenGL REQUIRED)
 target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES})
 #include_directories(${OPENGL_INCLUDE_DIRS})
+
+target_link_libraries(${PROJECT_NAME} stdc++fs)
