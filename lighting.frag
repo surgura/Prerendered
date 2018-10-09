@@ -18,11 +18,11 @@ void main()
     normal = normalize(texture2D(normalmap,gl_TexCoord[0].st)).rgb;
     depth = texture2D(depthmap, gl_TexCoord[0].st).r;
     lightDir = normalize(lightpos);
-    NdotL = max(dot(normal, lightDir), 0.0);
+    NdotL = max(dot(normal, lightDir), 0.0) + 0.0001*depth;
     diffuse = texture2D(colormap,gl_TexCoord[0].st);
     ambient = texture2D(colormap,gl_TexCoord[0].st) * 0;
     gl_FragColor = vec4((NdotL * diffuse).rgb, diffuse.a) + ambient;
-    gl_FragDepth = depth;
+    gl_FragDepth = depth / 1000.0f;
 
 /*
     vec3 normal, lightDir;
