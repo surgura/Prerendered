@@ -15,27 +15,31 @@ class Object
 public:
     Object(sf::Texture const& colorMap, sf::Texture const& normalMap) :
         colorMap(colorMap),
-        normalMap(normalMap)
+        normalMap(normalMap),
+        scale(1,1)
     {}
 
     sf::Texture const& colorMap;
     sf::Texture const& normalMap;
     sf::Vector2f position;
     sf::Vector2f origin;
+    sf::Vector2f scale;
 
     sf::Vector2f RealposToScreenpos(sf::Vector2f const& cameraPos)
     {
         sf::Transform fromIsoToScreen;
         fromIsoToScreen.rotate(45);
         fromIsoToScreen.scale(1.0f, -0.5f);
-        return fromIsoToScreen.transformPoint(position);
+        return fromIsoToScreen.transformPoint(position-cameraPos);
     }
 
     void Draw(sf::RenderTarget& renderTarget, sf::Vector2f const& cameraPos)
     {
         sf::Sprite sprite;
-        sprite.setPosition(RealposToScreenpos(position));
+        sprite.setPosition(RealposToScreenpos(cameraPos));
         sprite.setTexture(colorMap);
+        sprite.setScale(scale);
+        sprite.setOrigin(origin);
         renderTarget.draw(sprite);
     }
 };
@@ -104,7 +108,10 @@ std::optional<Object> CreateCube(TextureLoader& texLoader)
     if (!texNormal)
         return std::nullopt;
 
-    return Object(**texColor, **texNormal);
+    Object obj(**texColor, **texNormal);
+    obj.origin = { 242, 538 };
+
+    return obj;
 }
 
 uint64_t unix_timestamp()
@@ -129,7 +136,7 @@ int main()
         return -1;
     }
 
-    sf::Vector2f cameraPos(0,0);
+    sf::Vector2f cameraPos(-600,00);
 
     auto cube1 = CreateCube(texLoader);
     if (!cube1)
@@ -138,7 +145,8 @@ int main()
     auto cube2 = CreateCube(texLoader);
     if (!cube2)
         return -1;
-    cube2->position = {-100, 100};
+    cube2->position = {50, -50};
+    //cube2->scale = { 0.5f, 0.5f };
 
     auto depthmap = texLoader.GetDepthMap("cube.depth.exr");
     if (!depthmap)
@@ -207,6 +215,7 @@ int main()
         sf::Vector3f lightpos(5+10.0f*(float)std::cos(((float)unixtime)*movespeed), 5, 5);
         lighting.setUniform("lightpos", lightpos);
         lighting.setUniform("normalmap", cube1->normalMap);
+        //cube2->position.x += unixtime*0.0000002f;
 
         sf::Shader::bind(&lighting);
         glUniform1i(depthIndex, 2);
@@ -214,7 +223,9 @@ int main()
         glBindTexture(GL_TEXTURE_2D, *depthmap);
         glActiveTexture(GL_TEXTURE0);
        
+        lighting.setUniform("scaley", cube1->scale.y);
         cube1->Draw(finalImage, cameraPos);
+        lighting.setUniform("scaley", cube2->scale.y);
         cube2->Draw(finalImage, cameraPos);
 
         finalImage.display();
