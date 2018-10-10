@@ -5,22 +5,21 @@
 #include <chrono>
 #include <cmath>
 #include <cstdlib>
-#include <experimental/filesystem>
 #include <unordered_map>
 #include <optional>
-#include "tinyexr.hpp"
+#include "TextureLoader.hpp"
 
 class Object
 {
 public:
-    Object(sf::Texture const& colorMap, sf::Texture const& normalMap) :
+    Object(sf::Texture colorMap, sf::Texture normalMap) :
         colorMap(colorMap),
         normalMap(normalMap),
         scale(1,1)
     {}
 
-    sf::Texture const& colorMap;
-    sf::Texture const& normalMap;
+    sf::Texture colorMap;
+    sf::Texture normalMap;
     sf::Vector2f position;
     sf::Vector2f origin;
     sf::Vector2f scale;
@@ -45,6 +44,7 @@ public:
     }
 };
 
+/*
 class TextureLoader
 {
     std::experimental::filesystem::path dir;
@@ -98,18 +98,18 @@ public:
 
         return { texid };
     }
-};
+};*/
 
 std::optional<Object> CreateCube(TextureLoader& texLoader)
 {
-    auto texColor = texLoader.Get("cube.color.png");
-    if (!texColor)
+    sf::Texture texColor;
+    if (!texColor.loadFromFile("./tex/cube.color.png"))
         return std::nullopt;
-    auto texNormal = texLoader.Get("cube.normal.png");
-    if (!texNormal)
+    sf::Texture texNormal;
+    if (!texNormal.loadFromFile("./tex/cube.normal.png"))
         return std::nullopt;
 
-    Object obj(**texColor, **texNormal);
+    Object obj(texColor, texNormal);
     obj.origin = { 242, 538 };
 
     return obj;
@@ -173,6 +173,10 @@ int main()
     if (!depthmap)
         return -1;
 
+    auto depthmaptree = texLoader.GetDepthMap("tree.depth.exr");
+    if (!depthmaptree)
+        return -1;
+
     sf::Shader lighting;
     if (!lighting.loadFromFile("lighting.vert", "lighting.frag"))
     {
@@ -182,13 +186,13 @@ int main()
     GLuint colorIndex = glGetUniformLocation(lighting.getNativeHandle(), "colormap");
     if (colorIndex == -1)
     {
-        std::cout << "Could not find depth!" << std::endl;
+        std::cout << "Could not find color!" << std::endl;
         return -1;
     }
     GLuint normalIndex = glGetUniformLocation(lighting.getNativeHandle(), "normalmap");
     if (normalIndex == -1)
     {
-        std::cout << "Could not find depth!" << std::endl;
+        std::cout << "Could not find normal!" << std::endl;
         return -1;
     }
     GLuint depthIndex = glGetUniformLocation(lighting.getNativeHandle(), "depthmap");
@@ -272,7 +276,6 @@ int main()
        
         lighting.setUniform("scaley", cube1->scale.y);
         cube1->Draw(finalImage, cameraPos);
-        lighting.setUniform("scaley", cube2->scale.y);
         cube2->Draw(finalImage, cameraPos);
 
         finalImage.display();
