@@ -24,8 +24,10 @@ void main()
     NdotL = max(dot(normal, lightDir), 0.0) + 0.0001*depth;
     diffuse = texture2D(colormap,gl_TexCoord[0].st);
     ambient = texture2D(colormap,gl_TexCoord[0].st) * 0;
-    gl_FragColor = vec4((NdotL * diffuse).rgb, diffuse.a) + ambient;
     gl_FragDepth = depth / 1000.0f;
+    //depth = (depth - 47) / 5;
+    //gl_FragColor = 0.0001*vec4((NdotL * diffuse).rgb, diffuse.a) + vec4(depth, depth, depth, diffuse.a) + ambient;
+     gl_FragColor = vec4((NdotL * diffuse).rgb, diffuse.a) + ambient;
 
 /*
     vec3 normal, lightDir;
