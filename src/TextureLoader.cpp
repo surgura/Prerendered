@@ -10,7 +10,17 @@ TextureLoader::TextureLoader(std::experimental::filesystem::path directory) :
     directory(directory)
 {}
 
-std::optional<std::uint32_t> TextureLoader::GetColorMap(std::string const& name)
+std::optional<sf::Texture> TextureLoader::GetColorMap(std::string const& name)
+{
+    sf::Texture tex;
+    if (!tex.loadFromFile((directory / name).string()))
+    {
+        return std::nullopt;
+    }
+    return { tex };
+}
+
+std::optional<std::uint32_t> TextureLoader::GetNormalMap(std::string const& name)
 {
     std::vector<std::uint8_t> data;
     std::uint32_t width, height;
@@ -24,18 +34,13 @@ std::optional<std::uint32_t> TextureLoader::GetColorMap(std::string const& name)
     GLuint texid;
     glGenTextures(1, &texid);
     glBindTexture(GL_TEXTURE_2D, texid);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_FLOAT, data.data());
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data.data());
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
     
     return { texid };
-}
-
-std::optional<std::uint32_t> TextureLoader::GetNormalMap(std::string const& name)
-{
-    return std::nullopt;
 }
 
 std::optional<std::uint32_t> TextureLoader::GetDepthMap(std::string const& name)
