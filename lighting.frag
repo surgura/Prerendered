@@ -3,7 +3,7 @@
 uniform sampler2D colormap;
 uniform sampler2D normalmap;
 uniform vec3 lightpos;
-uniform sampler2D depthmap;
+uniform sampler2D positionmap;
 uniform float scaley;
  
 void main()
@@ -19,7 +19,7 @@ void main()
     float depth;
 
     normal = normalize(texture2D(normalmap,gl_TexCoord[0].st)).rgb;
-    depth = texture2D(depthmap, gl_TexCoord[0].st).r;
+    depth = texture2D(positionmap, gl_TexCoord[0].st).r;
     lightDir = normalize(lightpos);
     NdotL = max(dot(normal, lightDir), 0.0) + 0.0001*depth;
     diffuse = texture2D(colormap,gl_TexCoord[0].st);

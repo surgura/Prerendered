@@ -32,10 +32,10 @@ IsometricDrawer::IsometricDrawer()
     {
         std::cout << "Could not find normal!" << std::endl;
     }
-    isoShaderIndexDepth = glGetUniformLocation(isoShader.getNativeHandle(), "depthmap");
-    if (isoShaderIndexDepth == -1)
+    isoShaderIndexPosition = glGetUniformLocation(isoShader.getNativeHandle(), "positionmap");
+    if (isoShaderIndexPosition == -1)
     {
-        std::cout << "Could not find depth!" << std::endl;
+        std::cout << "Could not find position!" << std::endl;
     }
 }
 
@@ -86,9 +86,9 @@ void IsometricDrawer::Render(sf::Vector2f const& cameraPos, sf::Vector3f const& 
         glBindTexture(GL_TEXTURE_2D, drawData.drawable.normalMap);
         glActiveTexture(GL_TEXTURE0);
         
-        glUniform1i(isoShaderIndexDepth, 2);
+        glUniform1i(isoShaderIndexPosition, 2);
         glActiveTexture(GL_TEXTURE0 + 2);
-        glBindTexture(GL_TEXTURE_2D, drawData.drawable.depthMap);
+        glBindTexture(GL_TEXTURE_2D, drawData.drawable.positionMap);
         glActiveTexture(GL_TEXTURE0);
 
         image.draw(sprite);

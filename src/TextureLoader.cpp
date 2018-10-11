@@ -77,7 +77,7 @@ std::optional<std::uint32_t> TextureLoader::GetNormalMap(std::string const& name
     return { texid };
 }
 
-std::optional<std::uint32_t> TextureLoader::GetDepthMap(std::string const& name)
+std::optional<std::uint32_t> TextureLoader::GetPositionMap(std::string const& name)
 {
     float *rgba = nullptr;
     std::int32_t width, height;

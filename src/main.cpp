@@ -10,51 +10,15 @@ std::optional<IsometricDrawable> CreateCubeDrawable(TextureLoader& texLoader)
     auto colorMap = texLoader.GetColorMap("cube.color.png");
     if (!colorMap)
         return std::nullopt;
-    auto normalMap = texLoader.GetNormalMap("cube2.normal.exr");
+    auto normalMap = texLoader.GetNormalMap("cube.normal.exr");
     if (!normalMap)
         return std::nullopt;
-    auto depthMap = texLoader.GetDepthMap("cube2.position.exr");
-    if (!depthMap)
+    auto positionMap = texLoader.GetPositionMap("cube.position.exr");
+    if (!positionMap)
         return std::nullopt;
 
-    IsometricDrawable obj(*colorMap, *normalMap, *depthMap);
-    obj.origin = { 242, 419 };
-
-    return obj;
-}
-
-std::optional<IsometricDrawable> CreateCube2Drawable(TextureLoader& texLoader)
-{
-    auto colorMap = texLoader.GetColorMap("cube2.color.png");
-    if (!colorMap)
-        return std::nullopt;
-    auto normalMap = texLoader.GetNormalMap("cube2.normal.exr");
-    if (!normalMap)
-        return std::nullopt;
-    auto depthMap = texLoader.GetDepthMap("cube2.position.exr");
-    if (!depthMap)
-        return std::nullopt;
-
-    IsometricDrawable obj(*colorMap, *normalMap, *depthMap);
+    IsometricDrawable obj(*colorMap, *normalMap, *positionMap);
     obj.origin = { 480, 417 };
-
-    return obj;
-}
-
-std::optional<IsometricDrawable> CreateTreeDrawable(TextureLoader& texLoader)
-{
-    auto colorMap = texLoader.GetColorMap("tree.color.png");
-    if (!colorMap)
-        return std::nullopt;
-    auto normalMap = texLoader.GetNormalMap("tree.normal.png");
-    if (!normalMap)
-        return std::nullopt;
-    auto depthMap = texLoader.GetDepthMap("tree.depth.exr");
-    if (!depthMap)
-        return std::nullopt;
-
-    IsometricDrawable obj(*colorMap, *normalMap, *depthMap);
-    obj.origin = { 476, 275 };
 
     return obj;
 }
@@ -79,13 +43,13 @@ int main()
 
     IsometricDrawer isometricDrawer;
 
-    auto drawable1 = CreateCube2Drawable(texLoader);
+    auto drawable1 = CreateCubeDrawable(texLoader);
     if (!drawable1)
         return -1;
     sf::Vector2f position1;
 
-    auto drawableCube2 = CreateCubeDrawable(texLoader);
-    if (!drawableCube2)
+    auto drawable2 = CreateCubeDrawable(texLoader);
+    if (!drawable2)
         return -1;
     sf::Vector2f positionCube2;
 
@@ -130,7 +94,7 @@ int main()
         
         positionCube2 = mouseReal;
         lightPos = sf::Vector3((float)mouseReal.x, (float)mouseReal.y, 0.0f);
-        std::cout << lightPos.x << " " << lightPos.y << std::endl;
+        //std::cout << lightPos.x << " " << lightPos.y << std::endl;
 
         isometricDrawer.Render(cameraPos, lightPos);
 
