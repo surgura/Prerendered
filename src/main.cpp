@@ -10,7 +10,7 @@ std::optional<IsometricDrawable> CreateCubeDrawable(TextureLoader& texLoader)
     auto colorMap = texLoader.GetColorMap("cube.color.png");
     if (!colorMap)
         return std::nullopt;
-    auto normalMap = texLoader.GetNormalMap("cube.normal.png");
+    auto normalMap = texLoader.GetNormalMap("cube2.normal.exr");
     if (!normalMap)
         return std::nullopt;
     auto depthMap = texLoader.GetDepthMap("cube.depth.exr");
@@ -28,7 +28,7 @@ std::optional<IsometricDrawable> CreateCube2Drawable(TextureLoader& texLoader)
     auto colorMap = texLoader.GetColorMap("cube2.color.png");
     if (!colorMap)
         return std::nullopt;
-    auto normalMap = texLoader.GetNormalMap("cube2.normal.png");
+    auto normalMap = texLoader.GetNormalMap("cube2.normal.exr");
     if (!normalMap)
         return std::nullopt;
     auto depthMap = texLoader.GetDepthMap("cube.depth.exr");
