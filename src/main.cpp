@@ -44,62 +44,6 @@ public:
     }
 };
 
-/*
-class TextureLoader
-{
-    std::experimental::filesystem::path dir;
-    std::unordered_map<std::string, sf::Texture> textures;
-public:
-    TextureLoader(std::experimental::filesystem::path dir) : dir(std::move(dir)) {}
-    std::optional<sf::Texture const*> Get(std::string const& tex)
-    {
-        auto res = textures.try_emplace(tex);
-        if (res.second)
-        {
-            if (!res.first->second.loadFromFile((dir / tex).string()))
-            {
-                return std::nullopt;
-            }
-        }
-        
-        return { &res.first->second };
-    }
-
-    std::optional<GLuint> GetDepthMap(std::string const& map)
-    {
-        float *rgba = nullptr;
-        int width, height;
-        const char *err = nullptr;
-        int ret = LoadEXR(&rgba, &width, &height, (dir / map).string().c_str(), &err);
-        if (TINYEXR_SUCCESS != ret)
-        {
-            std::cerr << "Failed to load EXR file [" << map << "] code = " << ret << std::endl;
-            return std::nullopt;
-        }
-
-        std::vector<float> data;
-        data.resize(size_t(width * height));
-        for (size_t y = 0; y < (size_t)height; y++)
-        {
-            for (size_t x = 0; x < (size_t)width; x++)
-            {
-                data[y*width+x] = rgba[4 * (y*width+x)];
-            }
-        }
-
-        GLuint texid;
-        glGenTextures(1, &texid);
-        glBindTexture(GL_TEXTURE_2D, texid);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, width, height, 0, GL_RED, GL_FLOAT, data.data());
- 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
- 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-
-        return { texid };
-    }
-};*/
-
 std::optional<Object> CreateCube(TextureLoader& texLoader)
 {
     sf::Texture texColor;
