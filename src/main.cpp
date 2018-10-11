@@ -1,50 +1,9 @@
 #include <GL/glew.h>
-#include <SFML/Graphics.hpp>
-#include <SFML/OpenGL.hpp>
 #include <iostream>
-#include <chrono>
-#include <cmath>
-#include <cstdlib>
-#include <unordered_map>
 #include <optional>
 #include "TextureLoader.hpp"
 #include "IsometricDrawer.hpp"
 #include "Isometric.hpp"
-
-class Object
-{
-public:
-    Object(sf::Texture colorMap, std::uint32_t normalMap) :
-        colorMap(colorMap),
-        normalMap(normalMap),
-        scale(1,1)
-    {}
-
-    sf::Texture colorMap;
-    std::uint32_t normalMap;
-    sf::Vector2f position;
-    sf::Vector2f origin;
-    sf::Vector2f scale;
-
-    sf::Vector2f RealposToScreenpos(sf::Vector2f const& cameraPos)
-    {
-        sf::Transform fromIsoToScreen;
-        fromIsoToScreen.rotate(45);
-        sf::Vector2f screenPos = fromIsoToScreen.transformPoint(position - sf::Vector2f(-cameraPos.x, cameraPos.y));
-        screenPos.y *= 0.5;
-        return -screenPos;
-    }
-
-    void Draw(sf::RenderTarget& renderTarget, sf::Vector2f const& cameraPos)
-    {
-        sf::Sprite sprite;
-        sprite.setPosition(RealposToScreenpos(cameraPos) + sf::Vector2f((float)renderTarget.getSize().x, (float)renderTarget.getSize().y)/2.0f);
-        sprite.setTexture(colorMap);
-        sprite.setScale(scale);
-        sprite.setOrigin(origin);
-        renderTarget.draw(sprite);
-    }
-};
 
 std::optional<IsometricDrawable> CreateCubeDrawable(TextureLoader& texLoader)
 {
