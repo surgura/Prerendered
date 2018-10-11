@@ -14,5 +14,5 @@ public:
     TextureLoader(std::experimental::filesystem::path directory);
     std::optional<sf::Texture> GetColorMap(std::string const& name);
     std::optional<std::uint32_t> GetNormalMap(std::string const& name);
-    std::optional<std::uint32_t> GetDepthMap(std::string const& name);
+    std::optional<std::uint32_t> GetPositionMap(std::string const& name);
 };

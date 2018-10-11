@@ -11,7 +11,7 @@ class IsometricDrawer
     sf::Shader isoShader;
     std::uint32_t isoShaderIndexColor;
     std::uint32_t isoShaderIndexNormal;
-    std::uint32_t isoShaderIndexDepth;
+    std::uint32_t isoShaderIndexPosition;
 
     struct DrawData
     {
