@@ -48,6 +48,7 @@ std::optional<std::uint32_t> TextureLoader::GetDepthMap(std::string const& name)
     float *rgba = nullptr;
     std::int32_t width, height;
     const char *err = nullptr;
+    std::cout << (directory / name).string().c_str() << std::endl;
     std::int32_t ret = LoadEXR(&rgba, &width, &height, (directory / name).string().c_str(), &err);
     if (TINYEXR_SUCCESS != ret)
     {
