@@ -22,6 +22,6 @@ class IsometricDrawer
 public:
     IsometricDrawer();
     void Add(sf::Vector2f const& position, IsometricDrawable const& drawable);
-    void Render(sf::Vector2f const& cameraPos);
+    void Render(sf::Vector2f const& cameraPos, sf::Vector3f const& lightPos);
     sf::Texture const& Texture();
 };

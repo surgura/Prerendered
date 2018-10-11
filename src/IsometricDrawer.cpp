@@ -52,13 +52,13 @@ uint64_t unix_timestamp()
     return ms.count();
 }
 
-void IsometricDrawer::Render(sf::Vector2f const& cameraPos)
+void IsometricDrawer::Render(sf::Vector2f const& cameraPos, sf::Vector3f const& lightPos)
 {
-    glEnable(GL_DEPTH_TEST);                            // Enables Depth Testing
+    glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_TRUE);
-    glDepthFunc(GL_LESS);                             // The Type Of Depth Testing To Do
+    glDepthFunc(GL_LESS);
     glDepthRange(0.0f, 1.0f);
-    glClearDepth(1.0f);                                 // Depth Buffer Setup
+    glClearDepth(1.0f);
 
     image.clear(sf::Color::Blue);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -69,15 +69,15 @@ void IsometricDrawer::Render(sf::Vector2f const& cameraPos)
     botpart /= 1000000;
     unixtime -= botpart * 1000000;
     float movespeed = 0.002f;
-    sf::Vector3f lightpos(5+10.0f*(float)std::cos(((float)unixtime)*movespeed), 5, 5);
-    isoShader.setUniform("lightpos", lightpos);
-
-    sf::Shader::bind(&isoShader);
+    //sf::Vector3f lightpos(5+10.0f*(float)std::cos(((float)unixtime)*movespeed), 5, 5);
+    isoShader.setUniform("lightpos", lightPos);
     
     for (auto const& drawData : drawDatas)
     {
+        sf::Shader::bind(&isoShader);
+
         sf::Sprite sprite;
-        sprite.setPosition(Isometric::RealposToScreenpos(drawData.position, cameraPos) + sf::Vector2f((float)image.getSize().x, (float)image.getSize().y)/2.0f);
+        sprite.setPosition(Isometric::RealposToScreenpos(drawData.position, cameraPos, image.getSize()));
         sprite.setTexture(drawData.drawable.colorMap);
         sprite.setOrigin(drawData.drawable.origin);
 
