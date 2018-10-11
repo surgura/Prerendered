@@ -12,14 +12,14 @@
 class Object
 {
 public:
-    Object(sf::Texture colorMap, sf::Texture normalMap) :
+    Object(sf::Texture colorMap, std::uint32_t normalMap) :
         colorMap(colorMap),
         normalMap(normalMap),
         scale(1,1)
     {}
 
     sf::Texture colorMap;
-    sf::Texture normalMap;
+    std::uint32_t normalMap;
     sf::Vector2f position;
     sf::Vector2f origin;
     sf::Vector2f scale;
@@ -46,14 +46,14 @@ public:
 
 std::optional<Object> CreateCube(TextureLoader& texLoader)
 {
-    sf::Texture texColor;
-    if (!texColor.loadFromFile("./tex/cube.color.png"))
+    auto colorMap = texLoader.GetColorMap("cube.color.png");
+    if (!colorMap)
         return std::nullopt;
-    sf::Texture texNormal;
-    if (!texNormal.loadFromFile("./tex/cube.normal.png"))
+    auto normalMap = texLoader.GetNormalMap("cube.normal.png");
+    if (!normalMap)
         return std::nullopt;
 
-    Object obj(texColor, texNormal);
+    Object obj(*colorMap, *normalMap);
     obj.origin = { 242, 538 };
 
     return obj;
@@ -204,7 +204,7 @@ int main()
         float movespeed = 0.002f;
         sf::Vector3f lightpos(5+10.0f*(float)std::cos(((float)unixtime)*movespeed), 5, 5);
         lighting.setUniform("lightpos", lightpos);
-        lighting.setUniform("normalmap", cube1->normalMap);
+        //lighting.setUniform("normalmap", cube1->normalMap);
         //cube2->position.x += (unixtime*0.0002f)/100.0f;
         //cube2->position.y += unixtime*0.0000002f;
 
@@ -213,6 +213,12 @@ int main()
         cube2->position = mouseReal;
 
         sf::Shader::bind(&lighting);
+
+        glUniform1i(normalIndex, 1);
+        glActiveTexture(GL_TEXTURE0 + 1);
+        glBindTexture(GL_TEXTURE_2D, cube1->normalMap);
+        glActiveTexture(GL_TEXTURE0);
+
         glUniform1i(depthIndex, 2);
         glActiveTexture(GL_TEXTURE0 + 2);
         glBindTexture(GL_TEXTURE_2D, *depthmap);
