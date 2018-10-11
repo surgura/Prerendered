@@ -13,7 +13,7 @@ std::optional<IsometricDrawable> CreateCubeDrawable(TextureLoader& texLoader)
     auto normalMap = texLoader.GetNormalMap("cube2.normal.exr");
     if (!normalMap)
         return std::nullopt;
-    auto depthMap = texLoader.GetDepthMap("cube.depth.exr");
+    auto depthMap = texLoader.GetDepthMap("cube2.position.exr");
     if (!depthMap)
         return std::nullopt;
 
@@ -31,7 +31,7 @@ std::optional<IsometricDrawable> CreateCube2Drawable(TextureLoader& texLoader)
     auto normalMap = texLoader.GetNormalMap("cube2.normal.exr");
     if (!normalMap)
         return std::nullopt;
-    auto depthMap = texLoader.GetDepthMap("cube.depth.exr");
+    auto depthMap = texLoader.GetDepthMap("cube2.position.exr");
     if (!depthMap)
         return std::nullopt;
 
@@ -130,7 +130,7 @@ int main()
         
         positionCube2 = mouseReal;
         lightPos = sf::Vector3((float)mouseReal.x, (float)mouseReal.y, 0.0f);
-        //std::cout << lightPos.x << " " << lightPos.y << std::endl;
+        std::cout << lightPos.x << " " << lightPos.y << std::endl;
 
         isometricDrawer.Render(cameraPos, lightPos);
 
