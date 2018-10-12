@@ -17,7 +17,7 @@ public:
             position.x * unitX.x + position.y * unitX.y,
             position.x * unitY.x + position.y * unitY.y
         );
-        result *= -1.0f;
+        result.y *= -1.0f;
         return result + sf::Vector2f((float)screenSize.x, (float)screenSize.y)/2.0f;
     }
 
