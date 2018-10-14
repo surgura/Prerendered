@@ -80,6 +80,7 @@ void IsometricDrawer::Render(sf::Vector2f const& cameraPos, sf::Vector3f const& 
         sprite.setPosition(Isometric::RealposToScreenpos(drawData.position, cameraPos, image.getSize()));
         sprite.setTexture(drawData.drawable.colorMap);
         sprite.setOrigin(drawData.drawable.origin);
+        sprite.setScale(drawData.drawable.scale);
 
         glUniform1i(isoShaderIndexNormal, 1);
         glActiveTexture(GL_TEXTURE0 + 1);
