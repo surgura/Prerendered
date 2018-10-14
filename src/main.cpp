@@ -18,7 +18,7 @@ std::optional<IsometricDrawable> CreateCubeDrawable(TextureLoader& texLoader)
         return std::nullopt;
 
     IsometricDrawable obj(*colorMap, *normalMap, *positionMap);
-    obj.origin = { 480, 417 };
+    obj.origin = { 512, 512 };
 
     return obj;
 }
@@ -51,10 +51,10 @@ int main()
     auto drawable2 = CreateCubeDrawable(texLoader);
     if (!drawable2)
         return -1;
-    sf::Vector2f positionCube2;
+    sf::Vector2f position2;
 
     isometricDrawer.Add(position1, *drawable1);
-    //isometricDrawer.Add(positionCube2, *drawableCube2);
+    //isometricDrawer.Add(position2, *drawable2);
 
     while (window.isOpen())
     {
@@ -92,8 +92,9 @@ int main()
         sf::Vector2f mouseReal = Isometric::ScreenposToRealpos({ (float)mousePos.x, (float)mousePos.y }, cameraPos, 
         sf::Vector2u(800, 600));
         
-        positionCube2 = mouseReal;
-        lightPos = sf::Vector3((float)mouseReal.x, (float)mouseReal.y, 0.0f);
+        position2 = mouseReal;
+        lightPos = sf::Vector3((float)mouseReal.x, (float)mouseReal.y, 100.0f);
+        position2 = mouseReal;
         //std::cout << lightPos.x << " " << lightPos.y << std::endl;
 
         isometricDrawer.Render(cameraPos, lightPos);

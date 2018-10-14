@@ -90,19 +90,21 @@ std::optional<std::uint32_t> TextureLoader::GetPositionMap(std::string const& na
     }
 
     std::vector<float> data;
-    data.resize(std::size_t(width * height));
+    data.resize(std::size_t(width * height*3));
     for (std::size_t y = 0; y < (std::size_t)height; y++)
     {
         for (std::size_t x = 0; x < (std::size_t)width; x++)
         {
-            data[y*width+x] = rgba[4 * (y*width+x)];
+            data[3*(y*width+x)+0] = rgba[4 * (y*width+x)+0];
+            data[3*(y*width+x)+1] = rgba[4 * (y*width+x)+1];
+            data[3*(y*width+x)+2] = rgba[4 * (y*width+x)+2];
         }
     }
 
     GLuint texid;
     glGenTextures(1, &texid);
     glBindTexture(GL_TEXTURE_2D, texid);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, width, height, 0, GL_RED, GL_FLOAT, data.data());
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, width, height, 0, GL_RGB, GL_FLOAT, data.data());
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
