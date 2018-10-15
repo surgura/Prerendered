@@ -95,7 +95,7 @@ int main()
         position2 = mouseReal;
         lightPos = sf::Vector3((float)mouseReal.x, (float)mouseReal.y, 100.0f);
         position2 = mouseReal;
-        //std::cout << lightPos.x << " " << lightPos.y << std::endl;
+        std::cout << lightPos.x << " " << lightPos.y << std::endl;
 
         isometricDrawer.Render(cameraPos, lightPos);
 

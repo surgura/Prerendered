@@ -92,6 +92,8 @@ void IsometricDrawer::Render(sf::Vector2f const& cameraPos, sf::Vector3f const& 
         glBindTexture(GL_TEXTURE_2D, drawData.drawable.positionMap);
         glActiveTexture(GL_TEXTURE0);
 
+        isoShader.setUniform("position", drawData.position);
+
         image.draw(sprite);
     }
 
