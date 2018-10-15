@@ -1,0 +1,8 @@
+camera position:
+	x 30.6086
+	y -30.6086
+	z 25.0
+camera rotation
+	60d
+	0
+	45d
