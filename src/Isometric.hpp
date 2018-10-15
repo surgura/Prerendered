@@ -24,6 +24,22 @@ public:
         return result;
     }
 
+    static sf::Vector2f RealposToScreenpos3d(sf::Vector3f const& position, sf::Vector2f const& cameraPos, sf::Vector2u const& screenSize)
+    {
+        sf::Vector2f result = {position.x, position.y};
+        
+        sf::Vector2f unitX(0.70710678118f, 0.70710678118f);
+        sf::Vector2f unitY(0.70710678118f, -0.70710678118f);
+        result = {
+            result.x * unitX.x + result.y * unitX.y,
+            result.x * unitY.x + result.y * unitY.y
+        };
+        result.y *= 0.5f;
+        result.y -= position.z;
+        result += sf::Vector2f((float)screenSize.x, (float)screenSize.y)/2.0f;
+        return result;
+    }
+
     static sf::Vector2f ScreenposToRealpos(sf::Vector2f const& screenPos, sf::Vector2f const& cameraPos, sf::Vector2u const& screenSize)
     {
         sf::Vector2f centered = screenPos - sf::Vector2f((float)screenSize.x, (float)screenSize.y)/2.0f;
