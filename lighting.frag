@@ -2,24 +2,25 @@
 
 uniform sampler2D colormap;
 uniform sampler2D normalmap;
-uniform vec3 lightpos;
 uniform sampler2D positionmap;
-uniform float scaley;
 uniform vec3 position;
+uniform vec3 lightpos;
  
 void main()
 {
-    vec3 normal, lightDir;
-	vec4 diffuse, ambient, realpos;
+    vec3 normal, lightDir, relativepos, absolutepos;
+	vec4 diffuse, ambient;
     float ndotl;
     float depth;
     float pixelscale = 1024/8; // 1 positionmap position unit is 128 pixels
     float distfactor;
 
-    realpos = texture2D(positionmap,gl_TexCoord[0].st);
+    relativepos = texture2D(positionmap,gl_TexCoord[0].st).xyz;
+    absolutepos = position + relativepos*pixelscale;
+
     normal = normalize(texture2D(normalmap,gl_TexCoord[0].st).rgb);
-    lightDir = normalize(realpos.rgb*pixelscale - lightpos);
-    distfactor = 0.01*distance(texture2D(positionmap,gl_TexCoord[0].st).rgb*pixelscale, lightpos);
+    lightDir = normalize(absolutepos - lightpos);
+    distfactor = 0.01*distance(absolutepos, lightpos);
     distfactor = 1.0f / (distfactor*distfactor);
     ndotl = max(dot(normal, -lightDir), 0.0);
     diffuse = texture2D(colormap,gl_TexCoord[0].st);
@@ -29,6 +30,15 @@ void main()
     // depth = -y + tan(cam_angle)*rendered_z*distfactor
     //depth = texture2D(positionmap, gl_TexCoord[0].st).r;
     //depth = position
-    gl_FragDepth = depth / 1000.0f;
-    
+    //gl_FragDepth = depth / 1000.0f;
+    //depth = realpos
+    //gl_FragDepth = 
+    absolutepos /= 10000.0f;
+    depth = absolutepos.x*-0.70710678118f + absolutepos.y*0.70710678118f;
+    depth *= 0.5f;
+    depth += absolutepos.z;
+    depth = 0.5 - depth;
+    if (diffuse.a < 0.1f)
+        depth = 1;
+    gl_FragDepth = depth;
 }
