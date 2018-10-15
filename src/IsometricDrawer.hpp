@@ -15,13 +15,13 @@ class IsometricDrawer
 
     struct DrawData
     {
-        sf::Vector2f const& position;
+        sf::Vector3f const& position;
         IsometricDrawable const& drawable;
     };
     std::vector<DrawData> drawDatas;
 public:
     IsometricDrawer();
-    void Add(sf::Vector2f const& position, IsometricDrawable const& drawable);
+    void Add(sf::Vector3f const& position, IsometricDrawable const& drawable);
     void Render(sf::Vector2f const& cameraPos, sf::Vector3f const& lightPos);
     sf::Texture const& Texture();
 };

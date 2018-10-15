@@ -39,22 +39,22 @@ int main()
     TextureLoader texLoader(std::experimental::filesystem::path("tex"));
 
     sf::Vector2f cameraPos(0, 0);
-    sf::Vector3f lightPos(0,0,0);
+    sf::Vector3f lightPos(-10,-300,0);
 
     IsometricDrawer isometricDrawer;
 
     auto drawable1 = CreateCubeDrawable(texLoader);
     if (!drawable1)
         return -1;
-    sf::Vector2f position1;
+    sf::Vector3f position1;
 
     auto drawable2 = CreateCubeDrawable(texLoader);
     if (!drawable2)
         return -1;
-    sf::Vector2f position2;
+    sf::Vector3f position2;
 
     isometricDrawer.Add(position1, *drawable1);
-    //isometricDrawer.Add(position2, *drawable2);
+    isometricDrawer.Add(position2, *drawable2);
 
     while (window.isOpen())
     {
@@ -92,10 +92,9 @@ int main()
         sf::Vector2f mouseReal = Isometric::ScreenposToRealpos({ (float)mousePos.x, (float)mousePos.y }, cameraPos, 
         sf::Vector2u(800, 600));
         
-        position2 = mouseReal;
-        lightPos = sf::Vector3((float)mouseReal.x, (float)mouseReal.y, 100.0f);
-        position2 = mouseReal;
-        std::cout << lightPos.x << " " << lightPos.y << std::endl;
+        position2 = {mouseReal.x, mouseReal.y, 0};
+        //lightPos = sf::Vector3((float)mouseReal.x, (float)mouseReal.y, 100.0f);
+        //std::cout << lightPos.x << " " << lightPos.y << std::endl;
 
         isometricDrawer.Render(cameraPos, lightPos);
 

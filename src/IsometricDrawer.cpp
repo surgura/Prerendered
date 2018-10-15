@@ -39,7 +39,7 @@ IsometricDrawer::IsometricDrawer()
     }
 }
 
-void IsometricDrawer::Add(sf::Vector2f const& position, IsometricDrawable const& drawable)
+void IsometricDrawer::Add(sf::Vector3f const& position, IsometricDrawable const& drawable)
 {
     drawDatas.push_back({position, drawable});
 }
@@ -74,10 +74,11 @@ void IsometricDrawer::Render(sf::Vector2f const& cameraPos, sf::Vector3f const& 
     
     for (auto const& drawData : drawDatas)
     {
+        isoShader.setUniform("position", drawData.position);
         sf::Shader::bind(&isoShader);
 
         sf::Sprite sprite;
-        sprite.setPosition(Isometric::RealposToScreenpos(drawData.position, cameraPos, image.getSize()));
+        sprite.setPosition(Isometric::RealposToScreenpos({drawData.position.x, drawData.position.y}, cameraPos, image.getSize()));
         sprite.setTexture(drawData.drawable.colorMap);
         sprite.setOrigin(drawData.drawable.origin);
         sprite.setScale(drawData.drawable.scale);
@@ -91,8 +92,6 @@ void IsometricDrawer::Render(sf::Vector2f const& cameraPos, sf::Vector3f const& 
         glActiveTexture(GL_TEXTURE0 + 2);
         glBindTexture(GL_TEXTURE_2D, drawData.drawable.positionMap);
         glActiveTexture(GL_TEXTURE0);
-
-        isoShader.setUniform("position", drawData.position);
 
         image.draw(sprite);
     }
