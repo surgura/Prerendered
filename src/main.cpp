@@ -39,7 +39,7 @@ int main()
     TextureLoader texLoader(std::experimental::filesystem::path("tex"));
 
     sf::Vector2f cameraPos(0, 0);
-    sf::Vector3f lightPos(-10,-300,0);
+    sf::Vector3f lightPos(-10,-300,400);
 
     IsometricDrawer isometricDrawer;
 
@@ -52,6 +52,7 @@ int main()
     if (!drawable2)
         return -1;
     sf::Vector3f position2;
+    float pos2zoffset = 0;
 
     isometricDrawer.Add(position1, *drawable1);
     isometricDrawer.Add(position2, *drawable2);
@@ -87,12 +88,28 @@ int main()
             cameraPos.x -= 10;
             cameraPos.y -= 10;
         }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+        {
+            lightPos.z += 10;
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+        {
+            lightPos.z -= 10;
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
+        {
+            pos2zoffset += 10;
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::F))
+        {
+            pos2zoffset -= 10;
+        }
 
         sf::Vector2i mousePos = sf::Mouse::getPosition(window);
         sf::Vector2f mouseReal = Isometric::ScreenposToRealpos({ (float)mousePos.x, (float)mousePos.y }, cameraPos, 
         sf::Vector2u(800, 600));
         
-        position2 = {mouseReal.x, mouseReal.y, 0};
+        position2 = {mouseReal.x, mouseReal.y, pos2zoffset};
         //lightPos = sf::Vector3((float)mouseReal.x, (float)mouseReal.y, 100.0f);
         //std::cout << lightPos.x << " " << lightPos.y << std::endl;
 

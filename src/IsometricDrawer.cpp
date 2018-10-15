@@ -78,7 +78,7 @@ void IsometricDrawer::Render(sf::Vector2f const& cameraPos, sf::Vector3f const& 
         sf::Shader::bind(&isoShader);
 
         sf::Sprite sprite;
-        sprite.setPosition(Isometric::RealposToScreenpos({drawData.position.x, drawData.position.y}, cameraPos, image.getSize()));
+        sprite.setPosition(Isometric::RealposToScreenpos3d(drawData.position, cameraPos, image.getSize()));
         sprite.setTexture(drawData.drawable.colorMap);
         sprite.setOrigin(drawData.drawable.origin);
         sprite.setScale(drawData.drawable.scale);
