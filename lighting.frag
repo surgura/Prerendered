@@ -35,7 +35,7 @@ void main()
     //gl_FragDepth = 
     absolutepos /= 10000.0f;
     depth = 0.5f;
-    depth += 4*(absolutepos.x*-0.70710678118f + absolutepos.y*0.70710678118f); // 1/(0.5*sqrt(3)) still not correct, but close enough for now
+    //depth += 4*(absolutepos.x*-0.70710678118f + absolutepos.y*0.70710678118f); // 1/(0.5*sqrt(3)) still not correct, but close enough for now
     depth += absolutepos.z;
 
     if (diffuse.a < 0.1f)

@@ -61,15 +61,15 @@ int main()
 
     IsometricDrawer isometricDrawer;
 
-    auto drawable1 = CreateTreeDrawable(texLoader);
+    auto drawable1 = CreateCubeDrawable(texLoader);
     if (!drawable1)
         return -1;
-    sf::Vector3f position1{200,-200,0};
+    sf::Vector3f position1;//{200,-200,0};
 
-    auto drawable2 = CreateTreeDrawable(texLoader);
+    auto drawable2 = CreateCubeDrawable(texLoader);
     if (!drawable2)
         return -1;
-    sf::Vector3f position2{200,-450,0};
+    sf::Vector3f position2;//{200,-450,0};
     float pos2zoffset = 0;
 
     isometricDrawer.Add(position1, *drawable1);
@@ -127,8 +127,8 @@ int main()
         sf::Vector2f mouseReal = Isometric::ScreenposToRealpos({ (float)mousePos.x, (float)mousePos.y }, cameraPos, 
         sf::Vector2u(800, 600));
         
-        //position2 = {mouseReal.x, mouseReal.y, pos2zoffset};
-        lightPos = sf::Vector3((float)mouseReal.x, (float)mouseReal.y, pos2zoffset);
+        position2 = {mouseReal.x, mouseReal.y, pos2zoffset};
+        //lightPos = sf::Vector3((float)mouseReal.x, (float)mouseReal.y, pos2zoffset);
         //std::cout << lightPos.x << " " << lightPos.y << std::endl;
 
         isometricDrawer.Render(cameraPos, lightPos);

@@ -32,3 +32,5 @@
 *.app
 /build
 /.vscode
+/ortho/tree.blend
+/ortho/tree.blend1
