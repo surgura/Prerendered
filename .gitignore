@@ -32,5 +32,8 @@
 *.app
 /build
 /.vscode
+<<<<<<< HEAD
 /ortho/tree.blend
 /ortho/tree.blend1
+=======
+>>>>>>> fec9208d02c9c3fe4eed22e55ecc5f826e447984
