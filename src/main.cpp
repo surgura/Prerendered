@@ -6,6 +6,7 @@
 #include "Isometric.hpp"
 #include "TwodDrawer.hpp"
 #include "TwodText.hpp"
+#include "LevelEditor.hpp"
 
 std::optional<IsometricDrawable> CreateCubeDrawable(TextureLoader& texLoader)
 {
@@ -87,9 +88,8 @@ int main()
         std::cout << "Could not load font" << std::endl;
         return -1;
     }
-    sf::Vector2f textPos(0, 0);
-    TwodText text(font, textPos);
-    guiDrawer.Add(text);
+
+    LevelEditor levelEditor(font, guiDrawer, isometricDrawer, texLoader);
 
     while (window.isOpen())
     {
@@ -101,6 +101,8 @@ int main()
             if (event.type == sf::Event::Closed)
                 window.close();
         }
+
+        levelEditor.Update();
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
         {
