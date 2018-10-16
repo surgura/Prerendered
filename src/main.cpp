@@ -23,6 +23,24 @@ std::optional<IsometricDrawable> CreateCubeDrawable(TextureLoader& texLoader)
     return obj;
 }
 
+std::optional<IsometricDrawable> CreateTreeDrawable(TextureLoader& texLoader)
+{
+    auto colorMap = texLoader.GetColorMap("tree.color.png");
+    if (!colorMap)
+        return std::nullopt;
+    auto normalMap = texLoader.GetNormalMap("tree.normal.exr");
+    if (!normalMap)
+        return std::nullopt;
+    auto positionMap = texLoader.GetPositionMap("tree.position.exr");
+    if (!positionMap)
+        return std::nullopt;
+
+    IsometricDrawable obj(*colorMap, *normalMap, *positionMap);
+    obj.origin = { 512, 512 };
+
+    return obj;
+}
+
 int main()
 {
     sf::RenderWindow window(sf::VideoMode(800, 600, 32), "SFML OpenGL", sf::Style::Close);
@@ -43,15 +61,15 @@ int main()
 
     IsometricDrawer isometricDrawer;
 
-    auto drawable1 = CreateCubeDrawable(texLoader);
+    auto drawable1 = CreateTreeDrawable(texLoader);
     if (!drawable1)
         return -1;
-    sf::Vector3f position1;
+    sf::Vector3f position1{200,-200,0};
 
-    auto drawable2 = CreateCubeDrawable(texLoader);
+    auto drawable2 = CreateTreeDrawable(texLoader);
     if (!drawable2)
         return -1;
-    sf::Vector3f position2;
+    sf::Vector3f position2{200,-450,0};
     float pos2zoffset = 0;
 
     isometricDrawer.Add(position1, *drawable1);
@@ -109,8 +127,8 @@ int main()
         sf::Vector2f mouseReal = Isometric::ScreenposToRealpos({ (float)mousePos.x, (float)mousePos.y }, cameraPos, 
         sf::Vector2u(800, 600));
         
-        position2 = {mouseReal.x, mouseReal.y, pos2zoffset};
-        //lightPos = sf::Vector3((float)mouseReal.x, (float)mouseReal.y, 100.0f);
+        //position2 = {mouseReal.x, mouseReal.y, pos2zoffset};
+        lightPos = sf::Vector3((float)mouseReal.x, (float)mouseReal.y, pos2zoffset);
         //std::cout << lightPos.x << " " << lightPos.y << std::endl;
 
         isometricDrawer.Render(cameraPos, lightPos);

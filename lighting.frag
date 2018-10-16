@@ -20,11 +20,11 @@ void main()
 
     normal = normalize(texture2D(normalmap,gl_TexCoord[0].st).rgb);
     lightDir = normalize(absolutepos - lightpos);
-    distfactor = 0.01*distance(absolutepos, lightpos);
-    distfactor = 1.0f / (distfactor*distfactor);
+    distfactor = 0.005*distance(absolutepos, lightpos);
+    distfactor = min(1, 0.5*1.0f / (distfactor*distfactor));
     ndotl = max(dot(normal, -lightDir), 0.0);
     diffuse = texture2D(colormap,gl_TexCoord[0].st);
-    gl_FragColor = vec4(diffuse.rgb*0.2+distfactor*ndotl*diffuse.rgb, diffuse.a);
+    gl_FragColor = vec4(diffuse.rgb*0.0f+distfactor*ndotl*diffuse.rgb, diffuse.a);
 
     //realpos = normalize(texture2D(positionmap,gl_TexCoord[0].st);
     // depth = -y + tan(cam_angle)*rendered_z*distfactor
@@ -35,7 +35,7 @@ void main()
     //gl_FragDepth = 
     absolutepos /= 10000.0f;
     depth = 0.5f;
-    depth += 1.15470053838*(absolutepos.x*-0.70710678118f + absolutepos.y*0.70710678118f); // 1/(0.5*sqrt(3))
+    depth += 4*(absolutepos.x*-0.70710678118f + absolutepos.y*0.70710678118f); // 1/(0.5*sqrt(3)) still not correct, but close enough for now
     depth += absolutepos.z;
 
     if (diffuse.a < 0.1f)
