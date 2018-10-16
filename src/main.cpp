@@ -4,6 +4,8 @@
 #include "TextureLoader.hpp"
 #include "IsometricDrawer.hpp"
 #include "Isometric.hpp"
+#include "TwodDrawer.hpp"
+#include "TwodText.hpp"
 
 std::optional<IsometricDrawable> CreateCubeDrawable(TextureLoader& texLoader)
 {
@@ -59,6 +61,7 @@ int main()
     sf::Vector2f cameraPos(0, 0);
     sf::Vector3f lightPos(-10,-300,400);
 
+
     IsometricDrawer isometricDrawer;
 
     auto drawable1 = CreateCubeDrawable(texLoader);
@@ -74,6 +77,19 @@ int main()
 
     isometricDrawer.Add(position1, *drawable1);
     isometricDrawer.Add(position2, *drawable2);
+
+
+    TwodDrawer guiDrawer;
+
+    sf::Font font;
+    if (!font.loadFromFile("arial.ttf"))
+    {
+        std::cout << "Could not load font" << std::endl;
+        return -1;
+    }
+    sf::Vector2f textPos(0, 0);
+    TwodText text(font, textPos);
+    guiDrawer.Add(text);
 
     while (window.isOpen())
     {
@@ -133,12 +149,16 @@ int main()
 
         isometricDrawer.Render(cameraPos, lightPos);
 
+        guiDrawer.Render();
+
         // draw image to window
         window.clear();
         glDisable(GL_DEPTH_TEST);
         glUseProgram(0);
         sf::Sprite finalSprite(isometricDrawer.Texture());
         window.draw(finalSprite);
+        sf::Sprite guiSprite(guiDrawer.Texture());
+        window.draw(guiSprite);
         window.display();
     }
 
